@@ -1,0 +1,50 @@
+name: Quality
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: portfolio
+          POSTGRES_PASSWORD: portfolio
+          POSTGRES_USER: portfolio
+        options: >-
+          --health-cmd "pg_isready -U portfolio -d portfolio"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+        ports:
+          - 5432:5432
+    env:
+      DATABASE_URL: postgresql://portfolio:portfolio@127.0.0.1:5432/portfolio
+      NODE_ENV: test
+      PAYLOAD_SECRET: ci-only-payload-secret-at-least-32-characters
+      SITE_URL: http://127.0.0.1:3000
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+      - run: bun ci
+      - run: bun run payload:types
+      - run: bun run payload:importmap
+      - name: Generated files are current
+        run: git diff --exit-code
+      - run: bun run format:check
+      - run: bun run lint
+      - run: bun run typecheck
+      - run: bun run test
+      - run: bun run build
+      - run: bun run payload:migrate
+      - run: bun run test:e2e
+      - run: docker build --tag portfolio:test .

@@ -1,0 +1,57 @@
+{
+  "name": "portfolio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build --webpack",
+    "start": "next start",
+    "lint": "oxlint . --nextjs-plugin --react-plugin --jsx-a11y-plugin --deny-warnings --ignore-pattern src/payload-types.ts --ignore-pattern src/migrations --ignore-pattern src/app/\\(payload\\)/studio/importMap.js",
+    "format": "oxfmt package.json tsconfig.json next.config.ts playwright.config.ts vitest.config.ts src '!src/payload-types.ts' '!src/app/(payload)/studio/importMap.js' tests .github README.md ARCHITECTURE.md docs .env.example --write",
+    "format:check": "oxfmt package.json tsconfig.json next.config.ts playwright.config.ts vitest.config.ts src '!src/payload-types.ts' '!src/app/(payload)/studio/importMap.js' tests .github README.md ARCHITECTURE.md docs .env.example --check",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "payload": "bunx --bun payload --disable-transpile",
+    "payload:types": "bunx --bun payload --disable-transpile generate:types",
+    "payload:importmap": "bunx --bun payload --disable-transpile generate:importmap",
+    "payload:migrate:create": "bunx --bun payload --disable-transpile migrate:create",
+    "payload:migrate": "bunx --bun payload --disable-transpile migrate",
+    "payload:migrate:status": "bunx --bun payload --disable-transpile migrate:status",
+    "quality": "bun run format:check && bun run lint && bun run typecheck && bun run test && bun run build"
+  },
+  "dependencies": {
+    "@payloadcms/db-postgres": "3.85.1",
+    "@payloadcms/next": "3.85.1",
+    "@payloadcms/storage-s3": "3.85.1",
+    "@payloadcms/ui": "3.85.1",
+    "dotenv": "17.4.2",
+    "graphql": "16.14.2",
+    "next": "16.2.9",
+    "payload": "3.85.1",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "sharp": "0.34.5",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.58.2",
+    "@types/node": "25.9.2",
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "oxfmt": "0.54.0",
+    "oxlint": "1.69.0",
+    "typescript": "6.0.3",
+    "vitest": "4.1.9"
+  },
+  "engines": {
+    "bun": ">=1.3.14"
+  },
+  "packageManager": "bun@1.3.14",
+  "trustedDependencies": [
+    "esbuild",
+    "sharp"
+  ]
+}
