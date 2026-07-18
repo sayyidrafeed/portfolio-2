@@ -7,7 +7,7 @@ import { buildConfig } from "payload";
 import sharp from "sharp";
 
 import "./load-env";
-import { env, r2 } from "./env";
+import { browserOrigins, databaseURL, env, r2, serverURL, shouldRunStartupMigrations } from "./env";
 import { migrations } from "./migrations";
 import { Media } from "./payload/collections/Media";
 import { Users } from "./payload/collections/Users";
@@ -25,7 +25,7 @@ function createR2Storage(storage: NonNullable<typeof r2>) {
           const key = prefix ? `${prefix}/${storedFilename}` : storedFilename;
           return `${storage.publicURL.replace(/\/$/, "")}/${key}`;
         },
-        prefix: "media",
+        prefix: storage.prefix,
       },
     },
     config: {
@@ -45,13 +45,16 @@ export default buildConfig({
     user: Users.slug,
   },
   collections: [Users, Media],
-  cors: [env.SITE_URL],
-  csrf: [env.SITE_URL],
+  cors: browserOrigins,
+  csrf: browserOrigins,
   db: postgresAdapter({
     pool: {
-      connectionString: env.DATABASE_URL,
+      connectionString: databaseURL,
+      connectionTimeoutMillis: 10_000,
+      idleTimeoutMillis: 10_000,
+      max: 3,
     },
-    prodMigrations: migrations,
+    ...(shouldRunStartupMigrations ? { prodMigrations: migrations } : {}),
     push: false,
   }),
   plugins: r2 ? [createR2Storage(r2)] : [],
@@ -59,7 +62,7 @@ export default buildConfig({
     admin: "/studio",
   },
   secret: env.PAYLOAD_SECRET,
-  serverURL: env.SITE_URL,
+  serverURL,
   sharp,
   telemetry: false,
   typescript: {

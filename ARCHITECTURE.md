@@ -36,13 +36,22 @@ until its Payload Admin build is deterministic under the pinned Bun toolchain.
 - `/api/health` is a liveness endpoint and deliberately does not probe PostgreSQL.
 
 Payload's development schema push is disabled. Every environment applies the same committed
-migrations, while the production adapter runs pending migrations during application startup.
+migrations. Long-running Docker deployments apply pending migrations at startup; Vercel runs them
+once during the build to avoid serverless cold-start work.
 
 ## Storage
 
 Uploads use local `media/` storage when R2 is not configured, so that directory must be persisted
 for any non-ephemeral deployment. Configure every `R2_*` variable to use the S3-compatible R2
-adapter and keep the application container stateless.
+adapter and keep the application container stateless. R2 is mandatory when `VERCEL=1`; preview
+deployments use a derived, isolated prefix unless `R2_PREFIX` is set explicitly.
+
+## Vercel and Neon
+
+Vercel Functions use a small `node-postgres` pool against Neon's pooled endpoint. Migration CLI
+invocations select `DATABASE_URL_UNPOOLED`, which avoids PgBouncer transaction-pooling constraints.
+The canonical site URL remains `SITE_URL`, while preview Payload sessions use the current
+`VERCEL_URL` origin.
 
 ## Deferred decisions
 

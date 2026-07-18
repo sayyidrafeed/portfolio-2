@@ -26,6 +26,7 @@ WORKDIR /app
 ENV NODE_ENV=production \
   NEXT_TELEMETRY_DISABLED=1 \
   HOSTNAME=0.0.0.0 \
+  PAYLOAD_MIGRATE_ON_START=true \
   PORT=3000
 
 RUN mkdir -p media && chown bun:bun media
