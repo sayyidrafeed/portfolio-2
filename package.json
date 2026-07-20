@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build --webpack",
-    "vercel:build": "PAYLOAD_MIGRATING=true bun run payload:migrate && bun run build",
+    "vercel:build": "PAYLOAD_MIGRATING=true bun run payload:migrate && bun run payload:importmap && bun run build",
     "start": "next start",
     "lint": "oxlint . --nextjs-plugin --react-plugin --jsx-a11y-plugin --deny-warnings --ignore-pattern src/payload-types.ts --ignore-pattern src/migrations --ignore-pattern src/app/\\(payload\\)/studio/importMap.js",
     "format": "oxfmt package.json tsconfig.json next.config.ts playwright.config.ts vercel.json vitest.config.ts src '!src/payload-types.ts' '!src/app/(payload)/studio/importMap.js' tests .github README.md ARCHITECTURE.md docs .env.example --write",
