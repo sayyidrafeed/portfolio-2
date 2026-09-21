@@ -1,94 +1,95 @@
 # Portfolio
 
-A production-ready, design-neutral scaffold for a personal portfolio built with Next.js and
-Payload CMS.
+A static portfolio scaffold built with Next.js. Portfolio content is intentionally edited in code
+until a separate content decision is made.
 
 ## Stack
 
 - Bun 1.3.14
 - Next.js 16 and React 19
-- Payload CMS 3
-- PostgreSQL
-- Cloudflare R2 or persistent local media storage
-- Oxlint, Oxfmt, Vitest, and Playwright
-- Standalone multi-stage Docker image
+- Static export to out/
+- Vercel static hosting or an Nginx Docker image
+- Oxlint, Oxfmt, TypeScript, and the Next.js production build
 
 ## Local setup
 
 ```bash
 cp .env.example .env.local
-docker compose up -d postgres
 bun ci
-bun run payload:migrate
 bun run dev
 ```
 
-Open the public scaffold at `http://localhost:3000` and Payload Studio at
-`http://localhost:3000/studio`. On a fresh database, Studio guides you through creating the first
-administrator.
+Open http://localhost:3000. SITE_URL is required when building the static output and should be the
+canonical URL for the deployment.
 
 ## Commands
 
-| Command                          | Purpose                                          |
-| -------------------------------- | ------------------------------------------------ |
-| `bun run dev`                    | Start the development server                     |
-| `bun run build`                  | Create the standalone production build           |
-| `bun run vercel:build`           | Migrate Neon, then build for Vercel              |
-| `bun run quality`                | Run formatting, linting, types, tests, and build |
-| `bun run test:e2e`               | Exercise the public HTTP seams                   |
-| `bun run payload:types`          | Regenerate Payload TypeScript types              |
-| `bun run payload:importmap`      | Regenerate the Studio import map                 |
-| `bun run payload:migrate:create` | Create a schema migration                        |
-| `bun run payload:migrate`        | Apply pending migrations                         |
-| `bun run payload:migrate:status` | Inspect migration state                          |
+| Command              | Purpose                                                          |
+| -------------------- | ---------------------------------------------------------------- |
+| bun run dev          | Start the development server                                     |
+| bun run build        | Create the static export in out/                                 |
+| bun run format:check | Check formatting with Oxfmt                                      |
+| bun run lint         | Run Oxlint with the Next.js, React, and accessibility plugins    |
+| bun run typecheck    | Run TypeScript without emitting files                            |
+| bun run quality      | Run formatting, linting, type checking, and the production build |
 
-Generated types, Studio import maps, and migrations are committed. Regenerate them whenever a
-Payload schema changes. Automatic development schema pushes are disabled: run
-`bun run payload:migrate:create` after editing a collection, then apply the migration with
-`bun run payload:migrate`. This keeps development and production databases on the same path.
+There is no CMS, database, API route, test runner, or browser automation in this scaffold.
+
+## Manual content
+
+The current public page is a deliberately small scaffold. Edit the App Router files directly when
+adding portfolio content. Keep content close to its owning page until a shared typed content module
+is justified by more than one consumer.
+
+## Static build
+
+```bash
+SITE_URL=https://portfolio.example.com bun run build
+```
+
+The build must produce out/index.html, out/404.html, out/robots.txt, and out/sitemap.xml.
 
 ## Docker
 
-Build and run only the application image:
+The image builds the static export with Bun and serves it with Nginx:
 
 ```bash
-docker build -t portfolio .
-docker run --rm -p 3000:3000 \
-  -e SITE_URL=http://localhost:3000 \
-  -e DATABASE_URL=postgresql://portfolio:portfolio@host.docker.internal:5432/portfolio \
-  -e PAYLOAD_SECRET=replace-with-a-random-secret-at-least-32-characters-long \
-  portfolio
+docker build --build-arg SITE_URL=https://portfolio.example.com -t portfolio .
+docker run --rm -p 3000:3000 portfolio
 ```
 
-For a local container smoke test with PostgreSQL and persistent local media:
+For a local container:
 
 ```bash
-docker compose --profile app up --build
+docker compose up --build
 ```
 
-Production must inject database, Payload, and site URL values at runtime. When R2 is enabled, inject
-all R2 values at runtime as well. Do not pass secrets as Docker build arguments.
+Security headers are configured in both vercel.json and nginx/default.conf so the two hosting paths
+have the same baseline behavior.
 
-## Vercel + Neon
+## Vercel
 
-Vercel uses `bun ci` and `bun run vercel:build` from [vercel.json](./vercel.json). The build runs
-Payload migrations before compiling Next.js, while Vercel Functions use Neon's pooled connection.
-Docker keeps its startup migration behavior through `PAYLOAD_MIGRATE_ON_START=true`.
+Connect this repository to the Vercel project and set SITE_URL in the Vercel project environment.
+Vercel then runs bun ci and bun run build, and serves the generated static output without a function
+or database.
+Require the `CI / Quality gates` check in GitHub branch protection if merges to `main` must pass the
+quality workflow first.
 
-Set `DATABASE_URL` to Neon's pooled URL and `DATABASE_URL_UNPOOLED` to its direct URL. Vercel
-requires both values and a complete R2 configuration, because Functions cannot retain local media.
-Preview deployments use `VERCEL_URL` for Payload's browser origins and an isolated R2 prefix.
+## CI and Dokploy image flow
 
-See [docs/vercel-neon.md](./docs/vercel-neon.md) for dashboard setup and operating limits.
+The CI workflow runs format, lint, typecheck, static build, and Docker build quality gates for pull
+requests and `main`. Vercel can deploy independently through its Git integration.
 
-Use a fresh database when adopting this scaffold. A database previously modified by Payload's
-development schema push contains a special development migration marker and must be reconciled
-before production migrations can run non-interactively.
+The GHCR publish workflow is opt-in. Set the GitHub repository variable `PUBLISH_IMAGE=true` and
+create `DOKPLOY_SITE_URL` with the canonical URL used by the Dokploy deployment before enabling it.
+The image publish runs only after the CI workflow passes on `main`.
 
-## Environment
+The image names are:
 
-`SITE_URL`, `DATABASE_URL`, and `PAYLOAD_SECRET` are always required. R2 is optional outside
-Vercel, but partial R2 configuration fails fast during application startup. Without R2, persist
-`/app/media`; configure all five R2 values when the application should use stateless object storage.
+- ghcr.io/sayyidrafeed/portfolio-2:main
+- ghcr.io/sayyidrafeed/portfolio-2:sha-<commit>
 
-See [ARCHITECTURE.md](./ARCHITECTURE.md) for boundaries and intentionally deferred decisions.
+Configure Dokploy to pull the GHCR image. The main tag is convenient for automatic updates. A SHA
+tag is immutable and is preferred when a deployment needs an exact rollback target. If the GHCR
+package is private, configure a read-only registry token in Dokploy. No registry credentials belong
+in this repository.
