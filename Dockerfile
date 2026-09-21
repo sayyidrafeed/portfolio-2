@@ -14,29 +14,16 @@ FROM base AS builder
 RUN apk add --no-cache libc6-compat
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
+ARG SITE_URL=http://localhost:3000
 ENV NODE_ENV=production \
-  SITE_URL=http://localhost:3000 \
-  DATABASE_URL=postgresql://portfolio:portfolio@127.0.0.1:5432/portfolio \
-  PAYLOAD_SECRET=build-only-payload-secret-at-least-32-characters
+  SITE_URL=${SITE_URL}
 RUN --mount=type=cache,id=portfolio-next-cache,target=/app/.next/cache \
   bun run build
 
-FROM oven/bun:1.3.14-alpine AS runner
-WORKDIR /app
-ENV NODE_ENV=production \
-  NEXT_TELEMETRY_DISABLED=1 \
-  HOSTNAME=0.0.0.0 \
-  PAYLOAD_MIGRATE_ON_START=true \
-  PORT=3000
+FROM nginx:alpine AS runner
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/out /usr/share/nginx/html
 
-RUN mkdir -p media && chown bun:bun media
-
-COPY --from=builder /app/public ./public
-COPY --from=builder --chown=bun:bun /app/.next/standalone ./
-COPY --from=builder --chown=bun:bun /app/.next/static ./.next/static
-
-USER bun
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-  CMD ["bun", "-e", "fetch('http://127.0.0.1:3000/api/health').then((response) => { if (!response.ok) process.exit(1) }).catch(() => process.exit(1))"]
-CMD ["bun", "server.js"]
+  CMD ["wget", "--quiet", "-O", "/dev/null", "http://127.0.0.1:3000/"]
