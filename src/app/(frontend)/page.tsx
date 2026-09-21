@@ -1,17 +1,13 @@
-import Link from "next/link";
-import type { Route } from "next";
-
 export default function HomePage() {
   return (
     <main>
       <section aria-labelledby="scaffold-title">
-        <p>Foundation ready</p>
+        <p>Static foundation</p>
         <h1 id="scaffold-title">Portfolio scaffold</h1>
         <p>
-          The application, content studio, database adapter, media pipeline, and deployment boundary
-          are ready for a future design direction.
+          This static site is ready for portfolio content and visual direction to be added manually
+          in code.
         </p>
-        <Link href={"/studio" as Route}>Open Payload Studio</Link>
       </section>
     </main>
   );
