@@ -3,7 +3,6 @@
   "buildCommand": "bun run build",
   "framework": "nextjs",
   "installCommand": "bun ci",
-  "outputDirectory": "out",
   "routes": [
     { "src": "/(.*)", "check": true },
     {
