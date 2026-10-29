@@ -7,7 +7,8 @@
 - Do not add Payload, a CMS, a database, API route handlers, migrations, uploads, or server actions
   without a new architecture decision.
 - SITE_URL is required during builds because it owns canonical metadata, robots.txt, and the sitemap
-  URL.
+  URL. The Docker image can override the origin in robots.txt and the sitemap at container start
+  through its own SITE_URL environment variable (nginx/40-site-url.sh).
 
 ## Tooling
 
@@ -35,7 +36,8 @@
 - Docker serves the same export through Nginx.
 - CI quality gates live in `.github/workflows/ci.yml` and run for pull requests and `main`.
 - The image publish workflow is opt-in through `PUBLISH_IMAGE=true`; it publishes to GHCR only after CI passes.
-- `DOKPLOY_SITE_URL` is a GitHub repository variable used only as the Docker build-time canonical URL.
+- The published image is `ghcr.io/sayyidrafeed/portfolio`. `DOKPLOY_SITE_URL` is optional; set
+  SITE_URL on the Dokploy container instead to point robots.txt and the sitemap at the live domain.
 - Keep security headers aligned between vercel.json and nginx/default.conf.
 
 ## Acceptance
