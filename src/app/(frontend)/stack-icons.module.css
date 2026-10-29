@@ -1,0 +1,205 @@
+.defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.list {
+  --chip: #1c1c1f;
+  --chip-size: 36px;
+  --tip-gap: 10px;
+  --goo-inset: 24px;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  position: relative;
+  width: var(--chip-size);
+  height: var(--chip-size);
+}
+
+.item[data-open] {
+  z-index: 2;
+}
+
+.goo {
+  position: absolute;
+  bottom: 0;
+  left: calc(var(--goo-inset) * -1);
+  width: 240px;
+  height: 96px;
+  filter: url(#stack-goo);
+  pointer-events: none;
+}
+
+.chip {
+  position: absolute;
+  bottom: 0;
+  left: var(--goo-inset);
+  width: var(--chip-size);
+  height: var(--chip-size);
+  border-radius: 50%;
+  background: var(--chip);
+}
+
+.tipShape,
+.tip {
+  position: absolute;
+  bottom: calc(var(--chip-size) + var(--tip-gap));
+  left: 0;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  white-space: nowrap;
+}
+
+/* Closed, the bubble shrinks into the chip so the goo filter melts the two together.
+   scaleX stays small enough that even the longest label (about 160px) ends inside the chip. */
+.tipShape {
+  left: var(--goo-inset);
+  background: var(--chip);
+  color: transparent;
+  transform: translateY(calc(var(--chip-size) * 0.5 + var(--tip-gap))) scale(0.08, 0.35);
+  transform-origin: calc(var(--chip-size) / 2) 100%;
+  transition: transform 140ms var(--ease-out);
+}
+
+.item[data-open] .tipShape {
+  transform: none;
+  transition: transform 220ms var(--ease-out);
+}
+
+.item[data-align="end"] .goo {
+  right: calc(var(--goo-inset) * -1);
+  left: auto;
+}
+
+.item[data-align="end"] .chip,
+.item[data-align="end"] .tipShape {
+  right: var(--goo-inset);
+  left: auto;
+}
+
+.item[data-align="end"] .tipShape {
+  transform-origin: calc(100% - var(--chip-size) / 2) 100%;
+}
+
+.item[data-align="end"] .tip {
+  right: 0;
+  left: auto;
+}
+
+.tip {
+  color: #ececee;
+  opacity: 0;
+  transform: translateY(4px);
+  filter: blur(3px);
+  pointer-events: none;
+  transition:
+    opacity 100ms ease-out,
+    transform 100ms ease-out,
+    filter 100ms ease-out;
+}
+
+.item[data-open] .tip {
+  opacity: 1;
+  transform: none;
+  filter: blur(0);
+  transition:
+    opacity 180ms var(--ease-out) 60ms,
+    transform 180ms var(--ease-out) 60ms,
+    filter 180ms var(--ease-out) 60ms;
+}
+
+.button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #8e8e95;
+  cursor: default;
+  transition: color 150ms ease;
+}
+
+.item[data-open] .button {
+  color: #ececee;
+}
+
+.button:focus-visible {
+  outline: 2px solid #ececee;
+  outline-offset: 2px;
+}
+
+.glyph {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  background: currentColor;
+  mask: var(--icon) center / contain no-repeat;
+}
+
+/* The brand layer sits inside the same mask and fades in, so gradients cross-fade too. */
+.glyph::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--brand);
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
+.item[data-open] .glyph::after {
+  opacity: 1;
+}
+
+.glyph[data-keep-color] {
+  background: var(--icon) center / contain no-repeat;
+  mask: none;
+  filter: grayscale(1) brightness(1.4);
+  transition: filter 180ms ease;
+}
+
+.glyph[data-keep-color]::after {
+  content: none;
+}
+
+.item[data-open] .glyph[data-keep-color] {
+  filter: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tipShape,
+  .item[data-open] .tipShape {
+    transform: none;
+  }
+
+  .tipShape {
+    opacity: 0;
+    transition: opacity 150ms ease;
+  }
+
+  .item[data-open] .tipShape {
+    opacity: 1;
+    transition: opacity 150ms ease;
+  }
+
+  .tip,
+  .item[data-open] .tip {
+    transform: none;
+    filter: none;
+  }
+}

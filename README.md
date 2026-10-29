@@ -80,14 +80,18 @@ quality workflow first.
 The CI workflow runs format, lint, typecheck, static build, and Docker build quality gates for pull
 requests and `main`. Vercel can deploy independently through its Git integration.
 
-The GHCR publish workflow is opt-in. Set the GitHub repository variable `PUBLISH_IMAGE=true` and
-create `DOKPLOY_SITE_URL` with the canonical URL used by the Dokploy deployment before enabling it.
-The image publish runs only after the CI workflow passes on `main`.
+The GHCR publish workflow is opt-in. Set the GitHub repository variable `PUBLISH_IMAGE=true` to
+enable it. The image publish runs only after the CI workflow passes on `main`.
+
+Set `SITE_URL` on the Dokploy container to the live domain, for example
+`SITE_URL=https://rafee.example.com`. On start, the container rewrites robots.txt and the sitemap to
+that origin. The optional `DOKPLOY_SITE_URL` repository variable bakes a URL in at build time
+instead; without it the image builds with `http://localhost:3000`.
 
 The image names are:
 
-- ghcr.io/sayyidrafeed/portfolio-2:main
-- ghcr.io/sayyidrafeed/portfolio-2:sha-<commit>
+- ghcr.io/sayyidrafeed/portfolio:main
+- ghcr.io/sayyidrafeed/portfolio:sha-<commit>
 
 Configure Dokploy to pull the GHCR image. The main tag is convenient for automatic updates. A SHA
 tag is immutable and is preferred when a deployment needs an exact rollback target. If the GHCR

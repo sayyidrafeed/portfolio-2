@@ -23,18 +23,13 @@ jobs:
       contents: read
       packages: write
     env:
-      DOKPLOY_SITE_URL: ${{ vars.DOKPLOY_SITE_URL }}
-      IMAGE_NAME: ghcr.io/${{ github.repository }}
+      # Optional: the image rewrites robots.txt and the sitemap from the container's SITE_URL at start.
+      DOKPLOY_SITE_URL: ${{ vars.DOKPLOY_SITE_URL || 'http://localhost:3000' }}
+      IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/portfolio
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
-      - name: Require Dokploy canonical URL
-        run: |
-          if [ -z "$DOKPLOY_SITE_URL" ]; then
-            echo "Set the DOKPLOY_SITE_URL repository variable before publishing an image."
-            exit 1
-          fi
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
