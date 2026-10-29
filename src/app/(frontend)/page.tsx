@@ -1,3 +1,5 @@
+import type { CSSProperties } from "react";
+
 import { CollapsingName } from "./CollapsingName";
 import { ChannelIcon } from "./ChannelIcon";
 import { channelTargetProps, channels, profile, projects } from "./content";
@@ -7,6 +9,21 @@ import { LiquidStage } from "./LiquidStage";
 import styles from "./page.module.css";
 import { SiteMenu } from "./SiteMenu";
 import { WorkSteps } from "./WorkSteps";
+
+function ArrowIcon() {
+  return (
+    <svg aria-hidden="true" focusable="false" height="16" viewBox="0 0 24 24" width="16">
+      <path
+        d="M7 17 17 7M8.5 7H17v8.5"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+    </svg>
+  );
+}
 
 export default function HomePage() {
   return (
@@ -38,9 +55,23 @@ export default function HomePage() {
         <ul className={styles.footerLinks}>
           {channels.map((channel) => (
             <li key={channel.platform}>
-              <a className={styles.footerLink} href={channel.href} {...channelTargetProps(channel)}>
-                <ChannelIcon platform={channel.platform} />
-                {channel.label}
+              <a
+                aria-label={channel.label}
+                className={styles.footerLink}
+                href={channel.href}
+                {...channelTargetProps(channel)}
+              >
+                <span aria-hidden="true" className={styles.footerIcon}>
+                  <ChannelIcon platform={channel.platform} />
+                  <ArrowIcon />
+                </span>
+                <span aria-hidden="true" className={styles.footerLabel}>
+                  {Array.from(channel.label, (char, index) => (
+                    <span data-char={char} key={index} style={{ "--i": index } as CSSProperties}>
+                      {char}
+                    </span>
+                  ))}
+                </span>
               </a>
             </li>
           ))}

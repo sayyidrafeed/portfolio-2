@@ -297,11 +297,6 @@
   .projectLink:hover {
     border-color: rgba(255, 255, 255, 0.24);
   }
-
-  .footerLink:hover {
-    background: var(--fg);
-    color: var(--bg);
-  }
 }
 
 .footer {
@@ -340,7 +335,9 @@
   letter-spacing: -0.06em;
 }
 
+/* Positioned so the pills paint above the orb canvas where the two overlap. */
 .footerLinks {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
@@ -360,13 +357,83 @@
   background: rgba(11, 11, 12, 0.5);
   text-decoration: none;
   transition:
-    background-color 150ms ease-out,
-    color 150ms ease-out;
+    border-color 200ms ease,
+    transform 160ms ease-out;
+}
+
+/* Each slot clips one line; the next glyph waits one line below and rolls up on hover. */
+.footerIcon {
+  display: grid;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  overflow: hidden;
+}
+
+.footerIcon > svg {
+  grid-area: 1 / 1;
+  transition: transform 420ms var(--ease-out);
+}
+
+.footerIcon > svg + svg {
+  transform: translateY(100%);
+}
+
+.footerLabel {
+  display: inline-flex;
+  overflow: hidden;
+  line-height: 1.25;
+}
+
+.footerLabel > span {
+  position: relative;
+  display: inline-block;
+  white-space: pre;
+  transition: transform 460ms var(--ease-out);
+  transition-delay: calc(var(--i) * 22ms);
+}
+
+.footerLabel > span::after {
+  content: attr(data-char) / "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .footerLink:hover {
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+
+  .footerLink:hover .footerIcon > svg {
+    transform: translateY(-100%);
+  }
+
+  .footerLink:hover .footerIcon > svg + svg {
+    transform: none;
+  }
+
+  .footerLink:hover .footerLabel > span {
+    transform: translateY(-100%);
+  }
+
+  .footerLink:active {
+    transform: scale(0.97);
+  }
 }
 
 .footerLink:focus-visible {
   outline: 2px solid var(--fg);
   outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footerLink,
+  .footerIcon > svg,
+  .footerLabel > span {
+    transition-duration: 0ms;
+    transition-delay: 0ms;
+  }
 }
 
 @media (max-width: 760px) {
