@@ -17,6 +17,18 @@
 - Run docker build --build-arg SITE_URL=http://localhost:3000 --tag portfolio:test . when Docker
   behavior is part of the change.
 
+## Local preview
+
+- next start does not work with output: "export". Do not suggest it.
+- Use bun run dev for day-to-day development. Dev mode is looser than the export, so unsupported
+  features such as dynamic routes without generateStaticParams only fail during next build.
+- Preview the end product with bun run build, then bunx serve@latest out. serve runs through bunx
+  and is not a project dependency. It resolves clean URLs but does not apply the Nginx or Vercel
+  security headers or the 404 redirect to /.
+- Use docker compose up --build only when a change touches Nginx, headers, or routing behavior,
+  because only the Docker image matches production serving exactly.
+- Do not preview with python3 -m http.server. It does not map /about to about.html.
+
 ## Hosting
 
 - Vercel serves the static export directly.
