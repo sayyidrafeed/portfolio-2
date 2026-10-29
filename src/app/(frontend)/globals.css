@@ -32,3 +32,8 @@ a {
   background: #ececee;
   color: #0b0b0c;
 }
+
+/* The first-visit intro owns the screen until it slides away. */
+html[data-intro] body {
+  overflow: hidden;
+}

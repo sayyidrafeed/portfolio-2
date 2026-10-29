@@ -2,6 +2,7 @@ import { CollapsingName } from "./CollapsingName";
 import { ChannelIcon } from "./ChannelIcon";
 import { channelTargetProps, channels, profile, projects } from "./content";
 import { FoldOrb } from "./FoldOrb";
+import { Intro } from "./Intro";
 import { LiquidStage } from "./LiquidStage";
 import styles from "./page.module.css";
 import { SiteMenu } from "./SiteMenu";
@@ -10,6 +11,7 @@ import { WorkSteps } from "./WorkSteps";
 export default function HomePage() {
   return (
     <div className={styles.page}>
+      <Intro />
       <div aria-hidden="true" className={styles.bottomBlur}>
         {Array.from({ length: 5 }, (_, layer) => (
           <span key={layer} />
