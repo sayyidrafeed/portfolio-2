@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:1.7
 
-FROM oven/bun:1.4.4-alpine AS base
+# The static export is the same on every architecture, so only the Nginx stage is per-platform.
+FROM --platform=$BUILDPLATFORM oven/bun:1.4.4-alpine AS base
 ENV NEXT_TELEMETRY_DISABLED=1
 WORKDIR /app
 

@@ -88,7 +88,8 @@ Set `SITE_URL` on the Dokploy container to the live domain, for example
 that origin. The optional `DOKPLOY_SITE_URL` repository variable bakes a URL in at build time
 instead; without it the image builds with `http://localhost:3000`.
 
-The image names are:
+Images are published for `linux/amd64` and `linux/arm64`, so ARM servers can pull them too. The
+image names are:
 
 - ghcr.io/sayyidrafeed/portfolio:main
 - ghcr.io/sayyidrafeed/portfolio:sha-<commit>
