@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { type CSSProperties, useEffect, useRef } from "react";
 
 import styles from "./page.module.css";
 
@@ -69,7 +69,11 @@ export function CollapsingName({ id, name }: { id: string; name: string }) {
   }, []);
 
   return (
-    <div className={styles.nameSlot} ref={slotRef}>
+    <div
+      className={styles.nameSlot}
+      ref={slotRef}
+      style={{ "--name-chars": Array.from(name).length } as CSSProperties}
+    >
       <h1 className={styles.heroTitle} id={id} ref={titleRef}>
         {name}
       </h1>

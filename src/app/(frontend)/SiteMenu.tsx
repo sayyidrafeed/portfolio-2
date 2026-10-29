@@ -90,9 +90,10 @@ export function SiteMenu({ channels }: { channels: Channel[] }) {
                 href={channel.href}
                 {...channelTargetProps(channel)}
                 onClick={() => setOpen(false)}
+                title={channel.label}
               >
                 <ChannelIcon platform={channel.platform} />
-                {channel.label}
+                <span className={styles.menuLabel}>{channel.label}</span>
               </a>
             </li>
           ))}

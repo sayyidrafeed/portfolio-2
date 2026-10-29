@@ -78,6 +78,26 @@
   transition: transform 220ms var(--ease-out);
 }
 
+.item[data-align="end"] .goo {
+  right: calc(var(--goo-inset) * -1);
+  left: auto;
+}
+
+.item[data-align="end"] .chip,
+.item[data-align="end"] .tipShape {
+  right: var(--goo-inset);
+  left: auto;
+}
+
+.item[data-align="end"] .tipShape {
+  transform-origin: calc(100% - var(--chip-size) / 2) 100%;
+}
+
+.item[data-align="end"] .tip {
+  right: 0;
+  left: auto;
+}
+
 .tip {
   color: #ececee;
   opacity: 0;

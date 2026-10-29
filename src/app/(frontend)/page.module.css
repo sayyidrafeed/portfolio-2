@@ -5,11 +5,11 @@
   --muted: #9a9aa1;
   --line: rgba(255, 255, 255, 0.09);
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-  --name-size: clamp(96px, 22vw, 320px);
   --blur-height: clamp(72px, 12vh, 128px);
 
   position: relative;
   z-index: 0;
+  overflow-x: clip;
   background: var(--bg);
   color: var(--fg);
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
@@ -72,7 +72,13 @@
   gap: clamp(16px, 3vw, 32px);
 }
 
+/* The name never wraps, so a longer name scales down until it fits the gutters. */
 .nameSlot {
+  --name-size: min(
+    clamp(96px, 22vw, 320px),
+    calc((100vw - 2 * clamp(16px, 4vw, 40px)) / (var(--name-chars, 5) * 0.55))
+  );
+
   position: relative;
   height: calc(var(--name-size) * 0.8);
 }
@@ -145,6 +151,10 @@
 .workKicker span {
   position: absolute;
   inset: 0 auto auto 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   opacity: 0;
   transform: translateY(4px);
   transition:
@@ -521,6 +531,7 @@
 
 .menuPanel ul {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 2px;
   margin: 0;
   padding: 6px;
@@ -549,6 +560,7 @@
 
 .menuPanel a {
   display: flex;
+  min-width: 0;
   align-items: center;
   gap: 12px;
   min-height: 42px;
@@ -558,6 +570,17 @@
   font-size: 15px;
   text-decoration: none;
   transition: background-color 150ms ease;
+}
+
+.menuPanel a svg {
+  flex-shrink: 0;
+}
+
+.menuLabel {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .menuPanel a:focus-visible {

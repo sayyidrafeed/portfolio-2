@@ -13,8 +13,26 @@ export function StackIcons({ items }: { items: StackItem[] }) {
   const openRef = useRef<number | null>(null);
   const timer = useRef(0);
   const warmUntil = useRef(0);
+  const listRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => () => window.clearTimeout(timer.current), []);
+
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list) return;
+    // Tooltips start at the chip and run right; near the right edge they run left instead.
+    const align = () => {
+      const limit = document.documentElement.clientWidth - 12;
+      for (const item of list.querySelectorAll<HTMLElement>("[data-stack-item]")) {
+        const tip = item.querySelector<HTMLElement>("[data-tip]");
+        const end = tip ? item.getBoundingClientRect().left + tip.offsetWidth > limit : false;
+        item.dataset.align = end ? "end" : "start";
+      }
+    };
+    align();
+    window.addEventListener("resize", align);
+    return () => window.removeEventListener("resize", align);
+  }, [items]);
 
   const update = (index: number | null) => {
     if (openRef.current !== null && index === null) {
@@ -44,9 +62,14 @@ export function StackIcons({ items }: { items: StackItem[] }) {
   };
 
   return (
-    <ul className={styles.list}>
+    <ul className={styles.list} ref={listRef}>
       {items.map((item, index) => (
-        <li className={styles.item} data-open={open === index ? "" : undefined} key={item.label}>
+        <li
+          className={styles.item}
+          data-open={open === index ? "" : undefined}
+          data-stack-item=""
+          key={item.label}
+        >
           <span aria-hidden="true" className={styles.goo}>
             <span className={styles.chip} />
             <span className={styles.tipShape}>{item.label}</span>
@@ -69,7 +92,7 @@ export function StackIcons({ items }: { items: StackItem[] }) {
               style={{ "--icon": `url(${item.icon})`, "--brand": item.brand } as CSSProperties}
             />
           </button>
-          <span aria-hidden="true" className={styles.tip}>
+          <span aria-hidden="true" className={styles.tip} data-tip="">
             {item.label}
           </span>
         </li>
