@@ -27,7 +27,8 @@ export const metadata: Metadata = {
 
 export default function FrontendLayout({ children }: FrontendLayoutProps) {
   return (
-    <html className={`${sans.variable} ${mono.variable}`} lang="en">
+    // The intro gate script sets data-intro on <html> before hydration.
+    <html className={`${sans.variable} ${mono.variable}`} lang="en" suppressHydrationWarning>
       <body>
         <Script id="intro-gate" strategy="beforeInteractive">
           {INTRO_GATE_SCRIPT}
