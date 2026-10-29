@@ -26,6 +26,7 @@ jobs:
       # Optional: the image rewrites robots.txt and the sitemap from the container's SITE_URL at start.
       DOKPLOY_SITE_URL: ${{ vars.DOKPLOY_SITE_URL || 'http://localhost:3000' }}
       IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/portfolio
+      DOKPLOY_WEBHOOK_URL: ${{ secrets.DOKPLOY_WEBHOOK_URL }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -59,15 +60,10 @@ jobs:
           push: true
           sbom: true
           tags: ${{ steps.meta.outputs.tags }}
-      # Dokploy's webhook URL only accepts Docker Hub pushes, so GHCR deploys go through its API.
+      # A bare POST to the Dokploy deploy webhook redeploys the configured image (Auto Deploy must be on).
       - name: Trigger Dokploy deployment
-        if: ${{ vars.DOKPLOY_URL != '' && vars.DOKPLOY_APPLICATION_ID != '' }}
-        env:
-          DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
-          DOKPLOY_APPLICATION_ID: ${{ vars.DOKPLOY_APPLICATION_ID }}
-          DOKPLOY_URL: ${{ vars.DOKPLOY_URL }}
+        if: ${{ env.DOKPLOY_WEBHOOK_URL != '' }}
         run: |
-          curl -fsS --retry 2 -X POST "${DOKPLOY_URL%/}/api/application.deploy" \
-            -H "x-api-key: ${DOKPLOY_API_KEY}" \
+          curl -fsS --retry 2 -X POST "$DOKPLOY_WEBHOOK_URL" \
             -H "Content-Type: application/json" \
-            -d "{\"applicationId\": \"${DOKPLOY_APPLICATION_ID}\"}"
+            -d '{}'
