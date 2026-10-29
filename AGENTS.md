@@ -38,6 +38,8 @@
 - The image publish workflow is opt-in through `PUBLISH_IMAGE=true`; it publishes to GHCR only after CI passes.
 - The published image is `ghcr.io/sayyidrafeed/portfolio`. `DOKPLOY_SITE_URL` is optional; set
   SITE_URL on the Dokploy container instead to point robots.txt and the sitemap at the live domain.
+- After a publish, the workflow calls Dokploy's deploy API when `DOKPLOY_URL` and
+  `DOKPLOY_APPLICATION_ID` are set, using the `DOKPLOY_API_KEY` secret.
 - Keep security headers aligned between vercel.json and nginx/default.conf.
 
 ## Acceptance

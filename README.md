@@ -93,6 +93,12 @@ The image names are:
 - ghcr.io/sayyidrafeed/portfolio:main
 - ghcr.io/sayyidrafeed/portfolio:sha-<commit>
 
+To redeploy automatically after each publish, add the repository secret `DOKPLOY_API_KEY` (a
+Dokploy API key) and the repository variables `DOKPLOY_URL` (the Dokploy panel address) and
+`DOKPLOY_APPLICATION_ID`. The publish workflow then calls Dokploy's `application.deploy` API. Dokploy's
+own webhook URL only works with Docker Hub pushes, so it is not used here. Without those values the
+step is skipped.
+
 Configure Dokploy to pull the GHCR image. The main tag is convenient for automatic updates. A SHA
 tag is immutable and is preferred when a deployment needs an exact rollback target. If the GHCR
 package is private, configure a read-only registry token in Dokploy. No registry credentials belong
