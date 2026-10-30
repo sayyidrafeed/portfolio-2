@@ -51,8 +51,8 @@ configuration must not be added without a new architecture decision.
 4. Deploy the generated static output to Vercel or the Docker image.
 
 SITE_URL is a build-time input. It is not read by a running server because the deployed site has no
-application server. The one exception is the Docker image: Nginx's entrypoint swaps the build-time
-origin in robots.txt and the sitemap for the container's SITE_URL before it starts serving.
+application server. The Docker image is no exception: the origin is baked into the HTML metadata,
+robots.txt, and the sitemap when the image is built.
 
 ## Verification boundary
 

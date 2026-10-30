@@ -324,7 +324,8 @@ const mocks: Record<ProjectPreview, () => ReactNode> = {
 export function WorkMock({ preview }: { preview: ProjectPreview }) {
   const Mock = mocks[preview];
   return (
-    <div aria-hidden="true" className={styles.stage} data-preview={preview}>
+    // The mocks carry made-up numbers, so keep them out of search snippets.
+    <div aria-hidden="true" className={styles.stage} data-nosnippet="" data-preview={preview}>
       <Mock />
     </div>
   );

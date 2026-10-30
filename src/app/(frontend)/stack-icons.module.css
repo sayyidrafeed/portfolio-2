@@ -73,6 +73,10 @@
   transition: transform 140ms var(--ease-out);
 }
 
+.tipShape::before {
+  content: attr(data-label);
+}
+
 .item[data-open] .tipShape {
   transform: none;
   transition: transform 220ms var(--ease-out);

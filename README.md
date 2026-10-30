@@ -83,10 +83,9 @@ requests and `main`. Vercel can deploy independently through its Git integration
 The GHCR publish workflow is opt-in. Set the GitHub repository variable `PUBLISH_IMAGE=true` to
 enable it. The image publish runs only after the CI workflow passes on `main`.
 
-Set `SITE_URL` on the Dokploy container to the live domain, for example
-`SITE_URL=https://rafee.example.com`. On start, the container rewrites robots.txt and the sitemap to
-that origin. The optional `DOKPLOY_SITE_URL` repository variable bakes a URL in at build time
-instead; without it the image builds with `http://localhost:3000`.
+The image builds with `SITE_URL=https://sayyidrafee.com`, which ends up in the canonical URL, Open
+Graph tags, JSON-LD, robots.txt, and the sitemap. To publish for another domain, set the
+`DOKPLOY_SITE_URL` repository variable. A `SITE_URL` set on the running container has no effect.
 
 Images are published for `linux/amd64` and `linux/arm64`, so ARM servers can pull them too. The
 image names are:
