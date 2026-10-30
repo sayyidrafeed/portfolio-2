@@ -23,8 +23,8 @@ jobs:
       contents: read
       packages: write
     env:
-      # Optional: the image rewrites robots.txt and the sitemap from the container's SITE_URL at start.
-      DOKPLOY_SITE_URL: ${{ vars.DOKPLOY_SITE_URL || 'http://localhost:3000' }}
+      # Baked into canonical, Open Graph, JSON-LD, robots.txt and the sitemap at build time.
+      DOKPLOY_SITE_URL: ${{ vars.DOKPLOY_SITE_URL || 'https://sayyidrafee.com' }}
       IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/portfolio
       DOKPLOY_WEBHOOK_URL: ${{ secrets.DOKPLOY_WEBHOOK_URL }}
     steps:

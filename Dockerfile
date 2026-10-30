@@ -19,14 +19,11 @@ ARG SITE_URL=http://localhost:3000
 ENV NODE_ENV=production \
   SITE_URL=${SITE_URL}
 RUN --mount=type=cache,id=portfolio-next-cache,target=/app/.next/cache \
-  bun run build \
-  && bun -e 'console.log(new URL(process.env.SITE_URL).origin)' > /app/build-site-url
+  bun run build
 
 FROM nginx:alpine AS runner
 COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /app/out /usr/share/nginx/html
-COPY --from=builder /app/build-site-url /etc/nginx/build-site-url
-COPY --chmod=755 nginx/40-site-url.sh /docker-entrypoint.d/40-site-url.sh
 
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \

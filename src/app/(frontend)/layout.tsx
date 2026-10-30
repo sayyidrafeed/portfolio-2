@@ -16,12 +16,28 @@ type FrontendLayoutProps = {
   children: ReactNode;
 };
 
+const siteTitle = `${profile.name} - ${profile.role}`;
+
 export const metadata: Metadata = {
   metadataBase: getSiteURL(),
+  alternates: { canonical: "/" },
   description: profile.intro,
+  openGraph: {
+    description: profile.intro,
+    locale: "en_US",
+    siteName: profile.name,
+    title: siteTitle,
+    type: "profile",
+    url: "/",
+  },
   title: {
-    default: profile.name,
+    default: siteTitle,
     template: `%s · ${profile.name}`,
+  },
+  twitter: {
+    card: "summary_large_image",
+    description: profile.intro,
+    title: siteTitle,
   },
 };
 

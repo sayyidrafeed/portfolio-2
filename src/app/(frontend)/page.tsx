@@ -1,5 +1,7 @@
 import type { CSSProperties } from "react";
 
+import { getSiteURL } from "@/lib/site-url";
+
 import { CollapsingName } from "./CollapsingName";
 import { ChannelIcon } from "./ChannelIcon";
 import { channelTargetProps, channels, profile, projects } from "./content";
@@ -25,9 +27,35 @@ function ArrowIcon() {
   );
 }
 
+function profileJsonLd() {
+  const url = getSiteURL().toString();
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    url,
+    mainEntity: {
+      "@type": "Person",
+      "@id": `${url}#person`,
+      name: profile.fullName,
+      alternateName: profile.name,
+      jobTitle: profile.role,
+      description: profile.intro,
+      url,
+      worksFor: { "@type": "Organization", name: "NalarX", url: "https://nalarx.com" },
+      affiliation: { "@type": "Organization", name: "Veterantech", url: "https://veterantech.id" },
+      sameAs: channels
+        .filter((channel) => ["linkedin", "github", "x"].includes(channel.platform))
+        .map((channel) => channel.href),
+    },
+  };
+  // Escaping "<" keeps the JSON from closing the script tag early.
+  return JSON.stringify(data).replace(/</g, "\\u003c");
+}
+
 export default function HomePage() {
   return (
     <div className={styles.page}>
+      <script dangerouslySetInnerHTML={{ __html: profileJsonLd() }} type="application/ld+json" />
       <Intro />
       <div aria-hidden="true" className={styles.bottomBlur}>
         {Array.from({ length: 5 }, (_, layer) => (

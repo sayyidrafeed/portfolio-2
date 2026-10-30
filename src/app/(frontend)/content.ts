@@ -30,6 +30,7 @@ export type Channel = {
 export const profile = {
   name: "Rafee",
   fullName: "Muhammad Sayyid Rafee' Djamil",
+  role: "Product Engineer",
   tagline: "Happy to solve product / engineering problems.",
   intro:
     "I plan products at NalarX and build next to the engineers who ship them. I also mentor developers at Veterantech and keep side projects around to practise system design.",

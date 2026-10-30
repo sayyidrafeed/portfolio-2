@@ -72,7 +72,8 @@ export function StackIcons({ items }: { items: StackItem[] }) {
         >
           <span aria-hidden="true" className={styles.goo}>
             <span className={styles.chip} />
-            <span className={styles.tipShape}>{item.label}</span>
+            {/* The label sizes the bubble from CSS, so crawlers read it once, from the tooltip. */}
+            <span className={styles.tipShape} data-label={item.label} />
           </span>
           <button
             aria-label={item.label}
